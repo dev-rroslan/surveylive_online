@@ -1,0 +1,64 @@
+<.modal
+  :if={@live_action == :new}
+  id="user-modal"
+  show
+  on_cancel={JS.navigate(~p"/admin/users")}
+>
+  <:title><%= @page_title %></:title>
+  <.live_component
+    module={SurveyliveOnlineWeb.Admin.UserLive.FormComponent}
+    id={@user.id || :new}
+    title={@page_title}
+    action={@live_action}
+    user={@user}
+    navigate={~p"/admin/users"}
+  />
+</.modal>
+
+<.admin_page_heading title="Users">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/users"}>Users</.link></:link>
+
+  <.link patch={~p"/admin/users/new"} class="btn btn-outline">New User</.link>
+</.admin_page_heading>
+
+<.card border shadow>
+  <div class="overflow-x-auto">
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>
+            <.data_table_link sort={:email} params={@params}>
+              Email
+            </.data_table_link>
+          </th>
+          <th>
+            <.data_table_link sort={:inserted_at} params={@params}>
+              Signed up
+            </.data_table_link>
+          </th>
+          <th>Impersonate</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="users">
+        <%= for user <- @entries do %>
+          <tr id={"user-#{user.id}"} class="text-sm">
+            <td><%= user.email %></td>
+            <td><%= Calendar.strftime user.inserted_at, "%x" %></td>
+            <td>
+              <.link href={~p"/admin/impersonate/#{user.id}"} method="post" class="link link-primary">Impersonate</.link>
+            </td>
+
+            <td class="text-right">
+              <.link navigate={~p"/admin/users/#{user}"} class="link link-primary">Show</.link>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-2 mb-4">
+    <.pagination params={@params} {@pagination_assigns} />
+  </div>
+</.card>

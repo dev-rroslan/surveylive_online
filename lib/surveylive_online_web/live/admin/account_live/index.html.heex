@@ -1,0 +1,66 @@
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="account-modal"
+  show
+  on_cancel={JS.navigate(~p"/admin/accounts")}
+>
+  <:title><%= @page_title %></:title>
+  <.live_component
+    module={SurveyliveOnlineWeb.Admin.AccountLive.FormComponent}
+    id={@account.id || :new}
+    title={@page_title}
+    action={@live_action}
+    account={@account}
+    navigate={~p"/admin/accounts"}
+  />
+</.modal>
+
+<.admin_page_heading title="Accounts">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/accounts"}>Accounts</.link></:link>
+
+  <.link patch={~p"/admin/accounts/new"} class="btn btn-outline">New Account</.link>
+</.admin_page_heading>
+
+<.card border shadow>
+  <div class="overflow-x-auto">
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>
+            <.data_table_link sort={:name} params={@params}>
+              Name
+            </.data_table_link>
+          </th>
+          <th>
+            <.data_table_link sort={:inserted_at} params={@params}>
+              Created
+            </.data_table_link>
+          </th>
+
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="accounts">
+        <%= for account <- @entries do %>
+          <tr id={"account-#{account.id}"} class="text-sm">
+            <td><%= account.name %></td>
+            <td><%= Calendar.strftime account.inserted_at, "%x" %></td>
+            <td class="text-right">
+              <.link navigate={~p"/admin/accounts/#{account}"} class="link link-primary">Show</.link>
+              <.link patch={~p"/admin/accounts/#{account}/edit"} class="link link-primary">Edit</.link>
+              <.link phx-click={JS.push("delete", value: %{id: account.id})} data-confirm="Are you sure?" class="link link-primary">
+                Delete
+              </.link>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="mt-2 mb-4">
+    <.pagination params={@params} {@pagination_assigns} />
+  </div>
+</.card>

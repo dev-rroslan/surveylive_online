@@ -1,0 +1,17 @@
+<div>
+  <.form
+    let={f}
+    for={@changeset}
+    id="invitation-form"
+    phx-target={@myself}
+    phx-submit="save">
+
+    <div class="flex items-center">
+      <.input field={{f, :email}} type="text" label="Email" phx-hook="Focus" placeholder="Invite a user by email" />
+
+      <.button phx-disable-with="Saving..." class="ml-2 btn btn-primary">Invite</.button>
+    </div>
+    <% #= error_tag f, :email %>
+  </.form>
+</div>
+
